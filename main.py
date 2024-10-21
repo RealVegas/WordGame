@@ -1,43 +1,67 @@
 import requests
 from bs4 import BeautifulSoup
 
-slovar_url: str = 'https://slovar.kakras.ru'
-resptext: str = requests.get(slovar_url).text
 
-soup: BeautifulSoup = BeautifulSoup(resptext, 'html.parser')
+def get_html() -> list[str]:
 
-start_words: list[str] = soup.find_all(name='strong')
-other_words: list[str] = soup.find_all(name='b')
+    slovar_url: str = 'https://slovar.kakras.ru'
+    txt_html: str = requests.get(slovar_url).text
 
-all_words: list[str] = []
+    raw_html: list[str] = txt_html.split('\r\n')
+    prep_html: list[str] = [item.strip() for item in raw_html if item != '']
 
-for item in start_words:
-    word = str(item)
+    return prep_html
 
-    if ' ' not in word:
-        if word[8:-9].lower() not in all_words:
-            all_words.append(word[8:-9].lower())
 
-for item in other_words:
-    word = str(item)
+html_content: list[str] = get_html()
 
-    if word == '<b>Яхонт</b>':
-        all_words.append(word[3:-4].lower())
-        break
+for html_line in html_content:
+    if '<' not in html_line or '>' not in html_line:
+        continue
 
-    elif ' ' not in word:
-        slice_word = word[3:-4]
+    soup = BeautifulSoup(html_line, 'html.parser')
 
-        slice_word = slice_word.replace('<u>', '')
-        slice_word = slice_word.replace('</u>', '')
-        slice_word = slice_word.replace('&lt;', '')
-        slice_word = slice_word.replace('&lt;', '')
-        slice_word = slice_word.replace('&gt;', '')
-        slice_word = slice_word.replace('!', '')
-        slice_word = slice_word.replace('?', '')
+    start = soup.find(name='strong')
 
-        if slice_word.lower() not in all_words:
-            all_words.append(slice_word.lower())
+    if start:
+        txt = start.next_sibling
+        if txt is not None:
+            print(txt)
 
-for _ in all_words:
-    print(_)
+#
+# # start_words: element.ResultSet = soup.find_all(name='strong')
+# # other_words: element.ResultSet = soup.find_all(name='b')
+#
+
+# for item in start_words:
+#     print(type(item))
+
+#
+#
+#     if ' ' not in word:
+#         if word[8:-9].lower() not in all_words:
+#             all_words.append(word[8:-9].lower())
+#
+# for item in other_words:
+#     word = str(item)
+#
+#     if word == '<b>Яхонт</b>':
+#         all_words.append(word[3:-4].lower())
+#         break
+#
+#     elif ' ' not in word:
+#         slice_word = word[3:-4]
+#
+#         slice_word = slice_word.replace('<u>', '')
+#         slice_word = slice_word.replace('</u>', '')
+#         slice_word = slice_word.replace('&lt;', '')
+#         slice_word = slice_word.replace('&lt;', '')
+#         slice_word = slice_word.replace('&gt;', '')
+#         slice_word = slice_word.replace('!', '')
+#         slice_word = slice_word.replace('?', '')
+#
+#         if slice_word.lower() not in all_words:
+#             all_words.append(slice_word.lower())
+#
+# for _ in all_words:
+#     print(_)
