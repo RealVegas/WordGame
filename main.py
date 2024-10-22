@@ -1,7 +1,7 @@
 import re
 import requests
 from random import choice
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, PageElement
 
 
 def clean_string(line: str) -> str:
@@ -48,6 +48,19 @@ def clean_words(word: str) -> str:
     return clean
 
 
+def fill_dictionary(begin_tag: BeautifulSoup, fill_dict: dict[str, str]) -> None:
+    meaning: str = ''
+
+    olden_word: str = clean_words(str(begin_tag.text))
+    mean_text: PageElement | None = begin_tag.next_sibling
+
+    if mean_text is not None:
+        meaning = clean_string(str(mean_text))
+
+    if olden_word != '' and meaning != '':
+        fill_dict[olden_word] = meaning
+
+
 def get_html() -> list[str]:
     dictionary_url: str = 'https://slovar.kakras.ru'
     txt_html: str = requests.get(dictionary_url).text
@@ -69,28 +82,20 @@ while curr_line < 460:
     html_line: str = html_content[curr_line]
 
     soup: BeautifulSoup = BeautifulSoup(html_line, 'html.parser')
-    start: None = None
+    find_tag: None = None
 
     if curr_line == 319:
         continue
 
     elif curr_line < 40:
-        start: BeautifulSoup = soup.find(name='strong')
+        strong_tag: BeautifulSoup = soup.find(name='strong')
+        if strong_tag:
+            fill_dictionary(strong_tag, parsed_dictionary)
 
     elif curr_line > 40:
-        start: BeautifulSoup = soup.find(name='b')
-
-    if start:
-        meaning: str = ''
-
-        wrd: str = clean_words(str(start.text))
-        txt = start.next_sibling
-        if txt is not None:
-            meaning = clean_string(str(txt))
-
-        if wrd != '' and meaning != '':
-            parsed_dictionary[wrd] = meaning
-
+        b_tag: BeautifulSoup = soup.find(name='b')
+        if b_tag:
+            fill_dictionary(b_tag, parsed_dictionary)
 
 curr_line = 0
 
