@@ -1,7 +1,33 @@
 import re
+from secrets import choice
+
 import requests
-from random import choice
+from random import randint, choice
+
+from Tools.scripts.generate_stdlib_module_names import list_frozen
 from bs4 import BeautifulSoup, PageElement
+
+def split_string(text: str, max_length: int) -> list[str]:
+    split_text: list[str] = text.split()
+
+    current_line: str = ''
+    lines: list[str] = []
+
+    for one_word in split_text:
+
+        if len(current_line) + len(one_word) + 1 <= max_length:
+            if current_line=='':
+                current_line = one_word
+            else:
+                current_line += ' ' + one_word
+        else:
+            lines.append(current_line)
+            current_line = one_word
+
+    if current_line:
+        lines.append(current_line)
+
+    return lines
 
 
 def clean_string(line: str) -> str:
@@ -97,8 +123,40 @@ while curr_line < 460:
         if b_tag:
             fill_dictionary(b_tag, parsed_dictionary)
 
-curr_line = 0
+#Game
+print('Игра: Угадай старинное слово\n')
 
-for item, item_meaning in parsed_dictionary.items():
-    curr_line += 1
-    print(f'{curr_line} | {item} : {item_meaning}')
+upper_bound = len(parsed_dictionary) - 1
+right_score = 0
+wrong_score = 0
+
+while True:
+
+    random_number = randint(0, upper_bound)
+    meaning = list(parsed_dictionary.values())[random_number]
+
+    if len(meaning) > 100:
+        meaning = split_string(meaning, 100)
+
+    if type(meaning) is list:
+        for _ in meaning:
+            print(_)
+    else:
+        print(f'{meaning}')
+
+    print()
+
+    user_answer = input('Введите загаданное слово или 0 если Вы хотите закончить игру: ')
+
+    if user_answer == '0':
+        word = str(list(parsed_dictionary.keys())[random_number])
+        print(f'Загаданное слово: {word}. Вы дали {right_score} правильных ответов и {wrong_score} - неправильных\n')
+        break
+
+    word = str(list(parsed_dictionary.keys())[random_number])
+    if user_answer.lower() == word.lower():
+        right_score += 1
+        print(f'Верно! Правильных ответов: {right_score}: Неправильных ответов: {wrong_score}\n')
+    else:
+        wrong_score += 1
+        print(f'Неверно! Правильный ответ: {word}. Правильных ответов: {right_score}: Неправильных ответов: {wrong_score}\n')
