@@ -1,11 +1,8 @@
 import re
-from secrets import choice
-
 import requests
-from random import randint, choice
-
-from Tools.scripts.generate_stdlib_module_names import list_frozen
+from random import randint
 from bs4 import BeautifulSoup, PageElement
+
 
 def split_string(text: str, max_length: int) -> list[str]:
     split_text: list[str] = text.split()
@@ -16,7 +13,7 @@ def split_string(text: str, max_length: int) -> list[str]:
     for one_word in split_text:
 
         if len(current_line) + len(one_word) + 1 <= max_length:
-            if current_line=='':
+            if current_line == '':
                 current_line = one_word
             else:
                 current_line += ' ' + one_word
@@ -123,7 +120,8 @@ while curr_line < 460:
         if b_tag:
             fill_dictionary(b_tag, parsed_dictionary)
 
-#Game
+# Game
+
 print('Игра: Угадай старинное слово\n')
 
 upper_bound = len(parsed_dictionary) - 1
@@ -133,30 +131,29 @@ wrong_score = 0
 while True:
 
     random_number = randint(0, upper_bound)
-    meaning = list(parsed_dictionary.values())[random_number]
+    word_mean = list(parsed_dictionary.values())[random_number]
 
-    if len(meaning) > 100:
-        meaning = split_string(meaning, 100)
+    if len(word_mean) > 100:
+        word_mean = split_string(word_mean, 100)
 
-    if type(meaning) is list:
-        for _ in meaning:
+    if type(word_mean) is list:
+        for _ in word_mean:
             print(_)
     else:
-        print(f'{meaning}')
+        print(word_mean)
 
     print()
 
     user_answer = input('Введите загаданное слово или 0 если Вы хотите закончить игру: ')
+    right_answer = str(list(parsed_dictionary.keys())[random_number])
 
     if user_answer == '0':
-        word = str(list(parsed_dictionary.keys())[random_number])
-        print(f'Загаданное слово: {word}. Вы дали {right_score} правильных ответов и {wrong_score} - неправильных\n')
+        print(f'Загаданное слово: {right_answer}. Вы дали {right_score} правильных ответов и {wrong_score} - неправильных\n')
         break
 
-    word = str(list(parsed_dictionary.keys())[random_number])
-    if user_answer.lower() == word.lower():
+    elif user_answer.lower() == right_answer .lower():
         right_score += 1
         print(f'Верно! Правильных ответов: {right_score}: Неправильных ответов: {wrong_score}\n')
     else:
         wrong_score += 1
-        print(f'Неверно! Правильный ответ: {word}. Правильных ответов: {right_score}: Неправильных ответов: {wrong_score}\n')
+        print(f'Неверно! Правильный ответ: {right_answer}. Правильных ответов: {right_score}: Неправильных ответов: {wrong_score}\n')
