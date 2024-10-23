@@ -1,4 +1,5 @@
 import re
+import json
 import requests
 from random import randint
 from bs4 import BeautifulSoup, PageElement
@@ -27,48 +28,63 @@ def split_string(text: str, max_length: int) -> list[str]:
     return lines
 
 
-def clean_string(line: str) -> str:
-    text: str = re.sub(r'^[^а-яА-ЯёЁ]+', '', line).strip()
+def get_html() -> list[str]:
+    dict_url: str = 'https://slovar.kakras.ru'
+    txt_html: str = requests.get(dict_url).text
 
-    if text == '':
+    raw_html: list[str] = txt_html.split('\r\n')
+    final_html: list[str] = [itm.strip() for itm in raw_html if '<' in itm and '>' in itm]
+
+    return final_html
+
+def clean_key(key_line: str) -> str:
+
+    # Очистка конца строки от знаков препинания
+    key_text: str = re.sub(r'[^а-яА-ЯёЁ]+$', '', key_line)
+
+    # Удаление окончания строки после символов (,/ для исключения многозначных ответов
+    key_text: str = re.sub(r'[(,/].*', '', key_line)
+
+    # Большая первая буква в слове
+    key_text: str = key_text[0].upper() + key_text[1:]
+
+    return key_text.strip()
+
+def clean_value(val_line: str) -> str:
+
+    # Очистка начала строки от знаков препинания
+    val_text: str = re.sub(r'^[^а-яА-ЯёЁ]+', '', val_line)
+
+    if val_text == '':
         return ''
 
-    text: str = ' '.join(text.split())
+    # Удаление лишних пробелов
+    val_text: str = ' '.join(val_text.split())
 
-    forbidden_words: list[str] = ['антилокус', 'Антилокус', 'локус', 'Локус', '()']
+    # Удаление лишних слов
+    # Не использовал регулярные выражения для удаления () иногда остающихся после удаления слов
+    replace_words: list[str] = ['антилокус', 'Антилокус', 'локус', 'Локус', '()']
+    for one_word in replace_words:
+        val_text: str = val_text.replace(one_word, '')
 
-    for itm in forbidden_words:
-        text: str = text.replace(itm, '')
+    # Удаление конца строки после кавычки
+    val_text: str = re.sub(r'».*', '', val_text)
 
-    closing_quote: int = text.find('»', 1)
-    if closing_quote != -1:
-        text: str = text[:closing_quote + 1]
+    # Большая первая буква предложения
+    val_text: str = val_text[0].upper() + val_text[1:]
 
-    text: str = text[0].upper() + text[1:]
-
-    return text
+    return val_text.strip()
 
 
-def clean_words(word: str) -> str:
-    clean: str = re.sub(r'[^а-яА-ЯёЁ]+$', '', word)
 
-    open_bracket: int = clean.find('(', 1)
-    if open_bracket != -1:
-        clean: str = clean[:open_bracket]
 
-    comma_pos: int = clean.find(',', 1)
-    if comma_pos != -1:
-        clean: str = clean[:comma_pos]
 
-    slash_pos: int = clean.find('/', 1)
-    if slash_pos != -1:
-        clean: str = clean[:slash_pos]
 
-    clean: str = clean[0].upper() + clean[1:]
 
-    clean: str = clean.strip()
 
-    return clean
+
+
+
 
 
 def fill_dictionary(begin_tag: BeautifulSoup, fill_dict: dict[str, str]) -> None:
@@ -84,14 +100,10 @@ def fill_dictionary(begin_tag: BeautifulSoup, fill_dict: dict[str, str]) -> None
         fill_dict[olden_word] = meaning
 
 
-def get_html() -> list[str]:
-    dictionary_url: str = 'https://slovar.kakras.ru'
-    txt_html: str = requests.get(dictionary_url).text
 
-    raw_html: list[str] = txt_html.split('\r\n')
-    prep_html: list[str] = [itm.strip() for itm in raw_html if '<' in itm and '>' in itm]
 
-    return prep_html
+
+
 
 
 parsed_dictionary: dict[str, str] = {}
