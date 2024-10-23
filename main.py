@@ -159,9 +159,9 @@ def json_reader() -> dict[str, str]:
     file_path: Path = Path('game_resource.json')
 
     with open(file_path, mode='r', encoding='utf-8') as json_file:
-        json_dict = json.load(json_file, ensure_ascii=False)
+        json_dict = json.load(json_file)
 
-    json_deserial = json.loads(json_dict, ensure_ascii=False)
+    json_deserial = json.loads(json_dict)
 
     return json_deserial
 
@@ -237,14 +237,14 @@ def advanced_parser(option) -> None:
 
         save_request = input('Выберите действие: ')
 
-        if save_request == 'n':
+        if save_request.lower() == 'n':
 
             print('+-------------------------------------------------------+')
             print('| Программа завершается                                 |')
             print('+-------------------------------------------------------+\n')
             exit()
 
-    if save_request == 'y' or not option:
+    if save_request.lower() == 'y' or not option:
 
         json_writer(temp_dict)
         print('+-------------------------------------------------------+')
@@ -299,11 +299,14 @@ def game_manager():
             print('+-------------------------------------------------------+\n')
 
             game_request = input('(y/n): ')
-            if game_request == 'y':
+            if game_request.lower() == 'y':
                 start_game()
 
-        print('Программа завершается')
+        print('+-------------------------------------------------------+')
+        print('| Программа завершается                                 |')
+        print('+-------------------------------------------------------+\n')
         exit()
+
 
     elif not option_script:
         advanced_parser(False)
@@ -312,8 +315,15 @@ def game_manager():
         print('+-------------------------------------------------------+\n')
 
         game_request = input('(y/n): ')
-        if game_request == 'y':
+        if game_request.lower() == 'y':
             start_game()
 
-        print('Программа завершается')
+        print('+-------------------------------------------------------+')
+        print('| Программа завершается                                 |')
+        print('+-------------------------------------------------------+\n')
         exit()
+
+
+# Программа
+if __name__ == '__main__':
+    game_manager()
