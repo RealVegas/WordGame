@@ -307,7 +307,6 @@ def game_manager():
         print('+-------------------------------------------------------+\n')
         exit()
 
-
     elif not option_script:
         advanced_parser(False)
         print('+-------------------------------------------------------+')
