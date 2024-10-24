@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup, PageElement
 
 # Получение html-кода с сайта
 def get_html(dict_url: str) -> list[str]:
-
     # Запрос к сайту и получение html-кода
     txt_html: str = requests.get(dict_url).text
 
@@ -21,7 +20,6 @@ def get_html(dict_url: str) -> list[str]:
 
 # Очистка слова
 def clean_key(key_line: str) -> str:
-
     # Очистка конца строки от знаков препинания
     key_text: str = re.sub(r'[^а-яА-ЯёЁ]+$', '', key_line)
 
@@ -36,7 +34,6 @@ def clean_key(key_line: str) -> str:
 
 # Очистка описания слова
 def clean_value(val_line: str) -> str:
-
     # Очистка начала строки от знаков препинания
     val_text: str = re.sub(r'^[^а-яА-ЯёЁ]+', '', val_line)
 
@@ -82,7 +79,6 @@ def create_dict(begin_tag: BeautifulSoup, empty_dict: dict[str, str]) -> None:
 
 # Разбиение текста на строки по максимальному количеству символов
 def multi_text(txt: str, max_len: int) -> list[str]:
-
     # Разбиение текста на строки
     split_list: list[str] = txt.split()
 
@@ -114,7 +110,6 @@ def multi_text(txt: str, max_len: int) -> list[str]:
 # Парсинг сайта, заполнение игрового словаря
 # количество и пропуск строк связаны со спецификой kakras.ru (парсер не универсальный)
 def parse_site() -> dict[str, str]:
-
     game_dict: dict[str, str] = {}
 
     html_content: list[str] = get_html('https://slovar.kakras.ru')
@@ -155,7 +150,6 @@ def verify_file() -> bool:
 
 # Чтение json
 def json_reader() -> dict[str, str]:
-
     file_path: Path = Path('game_resource.json')
 
     with open(file_path, mode='r', encoding='utf-8') as json_file:
@@ -168,16 +162,15 @@ def json_reader() -> dict[str, str]:
 
 # Запись json
 def json_writer(game_dict: dict[str, str]) -> None:
-
     file_path: Path = Path('game_resource.json')
 
     with open(file_path, mode='w', encoding='utf-8') as json_file:
+        # noinspection PyTypeChecker
         json.dump(game_dict, json_file, ensure_ascii=False, indent=4)
 
 
 # Запуск игры
 def start_game() -> None:
-
     print('\nИгра: Угадай старинное слово\n')
 
     # Загрузка игрового словаря
@@ -207,7 +200,8 @@ def start_game() -> None:
         user_answer: str = input('Введите загаданное слово или 0 если хотите закончить игру: ')
 
         if user_answer == '0':
-            print(f'\nЗагаданное слово: {answer_text}. Вы дали {win_score} правильных ответов и {loss_score} - неправильных\n')
+            print(
+                f'\nЗагаданное слово: {answer_text}. Вы дали {win_score} правильных ответов и {loss_score} - неправильных\n')
             break
 
         elif user_answer.lower() == answer_text.lower():
@@ -215,11 +209,11 @@ def start_game() -> None:
             print(f'\nВерно! Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
         else:
             loss_score += 1
-            print(f'\nНеверно! Правильный ответ: {answer_text}. Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
+            print(
+                f'\nНеверно! Правильный ответ: {answer_text}. Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
 
 
 def advanced_parser(option) -> None:
-
     save_request: str = 'y'
 
     temp_dict: dict[str, str] = parse_site()
@@ -235,14 +229,12 @@ def advanced_parser(option) -> None:
         save_request: str = input('Выберите действие: ')
 
         if save_request.lower() == 'n':
-
             print('+-------------------------------------------------------+')
             print('| Программа завершается                                 |')
             print('+-------------------------------------------------------+\n')
             exit()
 
     if save_request.lower() == 'y' or not option:
-
         json_writer(temp_dict)
         print('+-------------------------------------------------------+')
         print('| Файл с данными для игры успешно сохранен              |')
@@ -255,7 +247,6 @@ def advanced_parser(option) -> None:
 
 # Начальное меню и описание игры
 def game_manager() -> None:
-
     option_script: bool = verify_file()
 
     # Введение
