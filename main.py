@@ -159,9 +159,9 @@ def json_reader() -> dict[str, str]:
     file_path: Path = Path('game_resource.json')
 
     with open(file_path, mode='r', encoding='utf-8') as json_file:
-        json_dict = json.load(json_file)
+        json_dict: str = json.load(json_file)
 
-    json_deserial = json.loads(json_dict)
+    json_deserial: dict[str, str] = json.loads(json_dict)
 
     return json_deserial
 
@@ -169,7 +169,7 @@ def json_reader() -> dict[str, str]:
 # Запись json
 def json_writer(game_dict: dict[str, str]) -> None:
 
-    json_serial = json.dumps(game_dict, ensure_ascii=False, indent=4)
+    json_serial: str = json.dumps(game_dict, ensure_ascii=False, indent=4)
 
     file_path: Path = Path('game_resource.json')
     with open(file_path, mode='w', encoding='utf-8') as json_file:
@@ -187,45 +187,45 @@ def start_game() -> None:
     parsed_dict: dict[str, str] = json_reader()
 
     # Верхний предел для случайного выбора описания
-    upper_bound = len(parsed_dict) - 1
+    upper_bound: int = len(parsed_dict) - 1
 
     # Подсчет правильных и неправильных ответов
-    win_score = 0
-    loss_score = 0
+    win_score: int = 0
+    loss_score: int = 0
 
     while True:
 
-        random_item = randint(0, upper_bound)
-        value_text = str(list(parsed_dict.values())[random_item])
-        answer_text = str(list(parsed_dict.keys())[random_item])
+        random_item: int = randint(0, upper_bound)
+        value_text: str = str(list(parsed_dict.values())[random_item])
+        answer_text: str = str(list(parsed_dict.keys())[random_item])
 
         if len(value_text) > 100:
-            value_text = multi_text(value_text, 100)
+            value_text: list[str] = multi_text(value_text, 100)
             for _ in value_text:
                 print(_)
         else:
             print(value_text)
 
         print()
-        user_answer = input('Введите загаданное слово или 0 если хотите закончить игру: ')
+        user_answer: str = input('Введите загаданное слово или 0 если хотите закончить игру: ')
 
         if user_answer == '0':
-            print(f'Загаданное слово: {answer_text}. Вы дали {win_score} правильных ответов и {loss_score} - неправильных\n')
+            print(f'\nЗагаданное слово: {answer_text}. Вы дали {win_score} правильных ответов и {loss_score} - неправильных\n')
             break
 
         elif user_answer.lower() == answer_text.lower():
             win_score += 1
-            print(f'Верно! Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
+            print(f'\nВерно! Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
         else:
             loss_score += 1
-            print(f'Неверно! Правильный ответ: {answer_text}. Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
+            print(f'\nНеверно! Правильный ответ: {answer_text}. Правильных ответов: {win_score}: Неправильных ответов: {loss_score}\n')
 
 
 def advanced_parser(option) -> None:
 
-    save_request = 'y'
+    save_request: str = 'y'
 
-    temp_dict = parse_site()
+    temp_dict: dict[str, str] = parse_site()
     print('+-------------------------------------------------------+')
     print('| Сайт: slovar.kakras.ru успешно распасен               |')
     print('+-------------------------------------------------------+')
@@ -235,7 +235,7 @@ def advanced_parser(option) -> None:
         print('| Вы хотите сохранить данные для игры? (y:n)            |')
         print('+-------------------------------------------------------+\n')
 
-        save_request = input('Выберите действие: ')
+        save_request: str = input('Выберите действие: ')
 
         if save_request.lower() == 'n':
 
@@ -257,9 +257,9 @@ def advanced_parser(option) -> None:
 
 
 # Начальное меню и описание игры
-def game_manager():
+def game_manager() -> None:
 
-    option_script = verify_file()
+    option_script: bool = verify_file()
 
     # Введение
     print('+-------------------------------------------------------+')
@@ -288,7 +288,7 @@ def game_manager():
 
     if option_script:
 
-        main_request = input('Выберите действие (1/2/3): ')
+        main_request: str = input('Выберите действие (1/2/3): ')
 
         if main_request == '1':
             start_game()
@@ -298,7 +298,7 @@ def game_manager():
             print('| Так что сыграем?                                      |')
             print('+-------------------------------------------------------+\n')
 
-            game_request = input('(y/n): ')
+            game_request: str = input('(y/n): ')
             if game_request.lower() == 'y':
                 start_game()
 
@@ -313,7 +313,7 @@ def game_manager():
         print('| Все готово, сыграем?                                  |')
         print('+-------------------------------------------------------+\n')
 
-        game_request = input('(y/n): ')
+        game_request: str = input('(y/n): ')
         if game_request.lower() == 'y':
             start_game()
 
