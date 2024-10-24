@@ -169,13 +169,10 @@ def json_reader() -> dict[str, str]:
 # Запись json
 def json_writer(game_dict: dict[str, str]) -> None:
 
-    json_serial: str = json.dumps(game_dict, ensure_ascii=False, indent=4)
-
     file_path: Path = Path('game_resource.json')
-    with open(file_path, mode='w', encoding='utf-8') as json_file:
-        json.dump(json_serial, json_file, ensure_ascii=False, indent=4)
 
-    return
+    with open(file_path, mode='w', encoding='utf-8') as json_file:
+        json.dump(game_dict, json_file, ensure_ascii=False, indent=4)
 
 
 # Запуск игры
