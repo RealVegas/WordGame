@@ -1,8 +1,8 @@
 import re
 import json
 import requests
-from random import randint
 from pathlib import Path
+from random import randint
 from bs4 import BeautifulSoup, PageElement
 
 
@@ -229,7 +229,7 @@ def advanced_parser(option) -> None:
 
     if option:
 
-        print('| Вы хотите сохранить данные для игры? (y:n)            |')
+        print('| Вы хотите сохранить данные для игры? (y/n)            |')
         print('+-------------------------------------------------------+\n')
 
         save_request: str = input('Выберите действие: ')
