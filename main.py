@@ -14,7 +14,7 @@ def get_html(dict_url: str) -> list[str]:
 
     # Разбиение html-кода на строки
     raw_html: list[str] = txt_html.split('\r\n')
-    final_html: list[str] = [itm.strip() for itm in raw_html if '<' in itm and '>' in itm]
+    final_html: list[str] = [line.strip() for line in raw_html if '<' in line and '>' in line]
 
     return final_html
 
