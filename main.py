@@ -1,5 +1,7 @@
 import re
+import sys
 import json
+
 import requests
 from pathlib import Path
 from random import randint
@@ -44,8 +46,9 @@ def clean_value(val_line: str) -> str:
     val_text: str = ' '.join(val_text.split())
 
     # Удаление лишних слов
-    # Не использовал регулярные выражения для удаления () иногда остающихся после удаления слов
+    # Не использовал регулярные выражения [чтобы излишне не усложнять] для удаления () иногда остающихся после удаления слов
     replace_words: list[str] = ['антилокус', 'Антилокус', 'локус', 'Локус', '()']
+
     for one_word in replace_words:
         val_text: str = val_text.replace(one_word, '')
 
@@ -68,11 +71,11 @@ def create_dict(begin_tag: BeautifulSoup, empty_dict: dict[str, str]) -> None:
 
     # Если описание имеется обработка описания
     if val_elem is not None:
-        val_text = clean_value(str(val_elem))
+        val_text: str = clean_value(str(val_elem))
 
     # Если после обработки слово и описание не стали пустыми строками - запись в словарь
     if key_text != '' and val_text != '':
-        empty_dict[key_text] = val_text
+        empty_dict[key_text]: dict[str, str] = val_text
 
     return
 
@@ -92,7 +95,7 @@ def multi_text(txt: str, max_len: int) -> list[str]:
         if len(current_line) + len(one_word) + 1 <= max_len:
 
             if current_line == '':
-                current_line = one_word
+                current_line: str = one_word
             else:
                 current_line += ' ' + one_word
 
@@ -153,11 +156,9 @@ def json_reader() -> dict[str, str]:
     file_path: Path = Path('game_resource.json')
 
     with open(file_path, mode='r', encoding='utf-8') as json_file:
-        json_dict: str = json.load(json_file)
+        json_dict: dict[str, str] = json.load(json_file)
 
-    json_deserial: dict[str, str] = json.loads(json_dict)
-
-    return json_deserial
+    return json_dict
 
 
 # Запись json
@@ -165,8 +166,7 @@ def json_writer(game_dict: dict[str, str]) -> None:
     file_path: Path = Path('game_resource.json')
 
     with open(file_path, mode='w', encoding='utf-8') as json_file:
-        # noinspection PyTypeChecker
-        json.dump(game_dict, json_file, ensure_ascii=False, indent=4)
+        json.dump(game_dict, json_file, ensure_ascii=False, indent=4)  # noqa PyTypeChecker
 
 
 # Запуск игры
@@ -239,9 +239,9 @@ def advanced_parser(option) -> None:
         print('+-------------------------------------------------------+')
         print('| Файл с данными для игры успешно сохранен              |')
         print('+-------------------------------------------------------+')
-        print('| Если вы хотите изменить слова или дополнить список    |')
-        print('| слов, изменить или дополнить описания слов,вам        |')
-        print('| необходимо отредактировать файл: game_resource.json   |')
+        print('| Если вы хотите изменить слова, дополнить список слов  |')
+        print('| изменить или дополнить описания слов, вам необходимо  |')
+        print('| отредактировать файл: game_resource.json              |')
         print('+-------------------------------------------------------+\n')
 
 
@@ -251,7 +251,7 @@ def game_manager() -> None:
 
     # Введение
     print('+-------------------------------------------------------+')
-    print('| Здравствуйте!                                         |')
+    print('| Здравствуйте!                                         |')
     print('| Сегодня в лёгкой игровой форме мы с Вами              |')
     print('| Узнаем некоторые старинные слова и даже пару пословиц |')
     print('+-------------------------------------------------------+\n')
@@ -291,9 +291,10 @@ def game_manager() -> None:
                 start_game()
 
         print('+-------------------------------------------------------+')
+        print('| Без списка слов и их описаний Вы не сможете играть    |')
         print('| Программа завершается                                 |')
         print('+-------------------------------------------------------+\n')
-        exit()
+        sys.exit(1)
 
     elif not option_script:
         advanced_parser(False)
@@ -306,9 +307,10 @@ def game_manager() -> None:
             start_game()
 
         print('+-------------------------------------------------------+')
+        print('| Без списка слов и их описаний Вы не сможете играть    |')
         print('| Программа завершается                                 |')
         print('+-------------------------------------------------------+\n')
-        exit()
+        sys.exit(1)
 
 
 # Программа
